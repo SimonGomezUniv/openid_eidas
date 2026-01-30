@@ -198,15 +198,21 @@ function showNotification(message, type) {
 
 // Afficher le résultat de la vérification
 async function displayVerificationResult(data) {
-  const { uuid: requestUuid } = data;
+  console.log('displayVerificationResult reçoit:', data);
+  
+  const { presentationRequestUrl } = data;
+  
+  if (!presentationRequestUrl) {
+    throw new Error('presentationRequestUrl non reçue du serveur');
+  }
   
   // Vérifier si on est en mode debug
   const isDebug = new URLSearchParams(window.location.search).get('debug') === 'true';
   const debugParam = isDebug ? '?debug=true' : '';
   
   try {
-    // Récupérer le token
-    const tokenResponse = await fetch(`/presentation-request/${requestUuid}${debugParam}`);
+    // Récupérer le token via la presentation request URL
+    const tokenResponse = await fetch(`${presentationRequestUrl}${debugParam}`);
     
     let vpToken, payloadDecoded;
     
@@ -220,13 +226,13 @@ async function displayVerificationResult(data) {
       vpToken = await tokenResponse.text();
     }
     
-    // Construire le lien OpenID4VP avec le token comme request_uri
-    const encodedToken = encodeURIComponent(vpToken);
+    // Construire le lien OpenID4VP avec la presentation request URL
+    const encodedRequestUri = encodeURIComponent(presentationRequestUrl);
     const dnsName = window.location.hostname;
-    const openid4vpLink = `openid4vp://?client=${dnsName}&request_uri=${encodedToken}`;
+    const openid4vpLink = `openid4vp://?client=${dnsName}&request_uri=${encodedRequestUri}`;
     
-    // Remplir l'URL du token
-    document.getElementById('presentationRequestUrl').value = vpToken;
+    // Remplir l'URL de la présentation
+    document.getElementById('presentationRequestUrl').value = presentationRequestUrl;
     
     // Créer le bouton avec le lien
     const linkContainer = document.getElementById('openid4vpLinkContainer');
@@ -246,11 +252,11 @@ ${JSON.stringify(payloadDecoded, null, 2)}
         </pre>
       `;
     } else {
-      // Générer le QR code via l'API
+      // Générer le QR code via l'API avec la presentation request URL
       const qrResponse = await fetch('/api/qrcode', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: openid4vpLink })
+        body: JSON.stringify({ text: presentationRequestUrl })
       });
       
       if (!qrResponse.ok) {

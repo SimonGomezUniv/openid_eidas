@@ -8,7 +8,7 @@ const keyManager = require('./lib/keyGenerator');
 
 const app = express();
 const PORT = process.env.SERVER_PORT || 3000;
-const SITE_DNS = process.env.SITE_DNS || 'http://localhost';
+const SITE_DNS = process.env.SITE_DNS || `http://localhost:${PORT}`;
 
 // Store presentation requests
 const presentationRequests = new Map();
@@ -186,6 +186,7 @@ app.post('/api/qrcode', async (req, res) => {
   const { text } = req.body;
   
   if (!text) {
+    console.error('Erreur QR: text manquant');
     return res.status(400).json({ error: 'Text requis' });
   }
   
@@ -200,7 +201,8 @@ app.post('/api/qrcode', async (req, res) => {
     
     res.json({ qrCode: qrCodeImage });
   } catch (error) {
-    res.status(500).json({ error: 'Erreur lors de la génération du QR code' });
+    console.error('Erreur lors de la génération du QR code:', error);
+    res.status(500).json({ error: 'Erreur lors de la génération du QR code', details: error.message });
   }
 });
 
