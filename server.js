@@ -44,6 +44,31 @@ const credentialsStore = [
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Middleware de logging
+app.use((req, res, next) => {
+  const startTime = Date.now();
+  
+  // Intercepter la réponse
+  const originalSend = res.send;
+  res.send = function(data) {
+    const duration = Date.now() - startTime;
+    const statusCode = res.statusCode;
+    
+    console.log(`\n📍 [${new Date().toISOString()}]`);
+    console.log(`   Méthode: ${req.method}`);
+    console.log(`   Path: ${req.path}`);
+    if (Object.keys(req.body).length > 0) {
+      console.log(`   Payload: ${JSON.stringify(req.body).substring(0, 200)}${JSON.stringify(req.body).length > 200 ? '...' : ''}`);
+    }
+    console.log(`   Status: ${statusCode}`);
+    console.log(`   Durée: ${duration}ms`);
+    
+    originalSend.call(this, data);
+  };
+  
+  next();
+});
+
 // Route racine
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
