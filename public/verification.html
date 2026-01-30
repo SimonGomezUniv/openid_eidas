@@ -79,36 +79,40 @@
           </div>
         </div>
         
-        <div class="button-group">
+        <div class="button-group" style="text-align: center;">
           <button class="btn-success" onclick="verifyCredentials()">✓ Initier la vérification →</button>
           <button class="btn-secondary" onclick="exportDHQL()">📤 Exporter DCQL</button>
         </div>
       </section>
       
       <!-- Section 4: Résultat de la vérification -->
-      <section class="section" id="verificationResultSection" style="display: none;">
+      <section class="section result-section" id="verificationResultSection" style="display: none;">
         <h2>✅ Demande de Vérification Générée</h2>
         
-        <div class="form-group">
-          <label>URL de la demande de présentation:</label>
-          <input type="text" id="presentationRequestUrl" readonly>
-        </div>
-        
-        <div class="form-group">
-          <label>Lien OpenID4VP:</label>
-          <div id="openid4vpLinkContainer" style="margin-bottom: 15px;">
-            <!-- Le lien sera généré ici -->
+        <div class="result-content">
+          <div class="form-group">
+            <label>URL de la demande de présentation:</label>
+            <input type="text" id="presentationRequestUrl" readonly>
+          </div>
+          
+          <div class="result-grid">
+            <div class="result-card">
+              <h3>🔗 Lien OpenID4VP</h3>
+              <div id="openid4vpLinkContainer" style="margin-top: 15px; text-align: center;">
+                <!-- Le lien sera généré ici -->
+              </div>
+            </div>
+            
+            <div class="result-card">
+              <h3>📱 QR Code</h3>
+              <div id="qrCodeContainer" style="text-align: center; margin-top: 15px;">
+                <!-- Le QR code sera généré ici -->
+              </div>
+            </div>
           </div>
         </div>
         
-        <div class="form-group">
-          <label>QR Code:</label>
-          <div id="qrCodeContainer" style="text-align: center;">
-            <!-- Le QR code sera généré ici -->
-          </div>
-        </div>
-        
-        <div class="button-group">
+        <div class="button-group" style="text-align: center;">
           <button class="btn-secondary" onclick="hideVerificationResult()">← Retour</button>
         </div>
       </section>
