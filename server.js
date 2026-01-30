@@ -172,7 +172,7 @@ app.get('/presentation-request/:requestId', (req, res) => {
       });
     } else {
       // Mode normal: retourner juste le token brut
-      res.type('text/plain');
+      //res.type('text/plain');
       res.send(vpToken);
     }
   } catch (error) {
