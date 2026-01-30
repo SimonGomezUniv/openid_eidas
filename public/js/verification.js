@@ -229,7 +229,7 @@ async function displayVerificationResult(data) {
     // Construire le lien OpenID4VP avec la presentation request URL
     const encodedRequestUri = encodeURIComponent(presentationRequestUrl);
     const dnsName = window.location.hostname;
-    const openid4vpLink = `openid4vp://?client=${dnsName}&request_uri=${encodedRequestUri}`;
+    const openid4vpLink = `openid4vp://?clientid=${dnsName}&request_uri=${encodedRequestUri}`;
     
     // Remplir l'URL de la présentation
     document.getElementById('presentationRequestUrl').value = presentationRequestUrl;
