@@ -173,6 +173,7 @@ app.get('/presentation-request/:requestId', (req, res) => {
     } else {
       // Mode normal: retourner juste le token brut
       //res.type('text/plain');
+      res.type('application/oauth-authz-req+jwt; charset=utf-8');
       res.send(vpToken);
     }
   } catch (error) {
