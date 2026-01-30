@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenID POC</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    .container {
+      text-align: center;
+      background: white;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+    h1 {
+      color: #333;
+      margin: 0 0 10px 0;
+    }
+    p {
+      color: #666;
+      margin: 10px 0;
+    }
+    a {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 12px 24px;
+      background: #667eea;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    a:hover {
+      background: #5568d3;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>OpenID POC</h1>
+    <p>Serveur OpenID4VP et OpenID4CI</p>
+    <p>✓ Serveur actif sur http://localhost:3000</p>
+    <a href="/verification.html">🔐 Aller à la vérification →</a>
+  </div>
+</body>
+</html>

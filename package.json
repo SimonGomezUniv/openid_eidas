@@ -1,0 +1,20 @@
+{
+  "name": "openid-poc",
+  "version": "1.0.0",
+  "description": "POC for OpenID4VP and OpenID4CI",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["openid", "eidas"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "dotenv": "^16.0.3",
+    "uuid": "^9.0.0",
+    "qrcode": "^1.5.3",
+    "jsonwebtoken": "^9.0.2"
+  }
+}
