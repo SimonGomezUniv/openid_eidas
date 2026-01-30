@@ -161,7 +161,20 @@ app.get('/presentation-request/:requestId', (req, res) => {
       }
     });
     
-    res.json({ vp_token: vpToken });
+    // Vérifier si le paramètre debug est présent
+    const isDebug = req.query.debug === 'true' || req.query.debug === '1';
+    
+    if (isDebug) {
+      // Mode debug: retourner le JSON avec le token et le payload en clair
+      res.json({
+        vp_token: vpToken,
+        payload_decoded: payload
+      });
+    } else {
+      // Mode normal: retourner juste le token brut
+      res.type('text/plain');
+      res.send(vpToken);
+    }
   } catch (error) {
     console.error('Erreur lors de la génération du vp_token:', error);
     res.status(500).json({ error: 'Erreur lors de la génération du vp_token' });

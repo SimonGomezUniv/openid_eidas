@@ -198,51 +198,81 @@ function showNotification(message, type) {
 
 // Afficher le résultat de la vérification
 async function displayVerificationResult(data) {
-  const { presentationRequestUrl } = data;
+  const { uuid: requestUuid } = data;
   
-  // Remplir l'URL de la demande
-  document.getElementById('presentationRequestUrl').value = presentationRequestUrl;
+  // Vérifier si on est en mode debug
+  const isDebug = new URLSearchParams(window.location.search).get('debug') === 'true';
+  const debugParam = isDebug ? '?debug=true' : '';
   
-  // Construire le lien OpenID4VP
-  const dnsName = window.location.hostname;
-  const encodedRequestUri = encodeURIComponent(presentationRequestUrl);
-  const openid4vpLink = `openid4vp://?client=${dnsName}&request_uri=${encodedRequestUri}`;
-  
-  // Créer le bouton avec le lien
-  const linkContainer = document.getElementById('openid4vpLinkContainer');
-  linkContainer.innerHTML = `
-    <a href="${openid4vpLink}" class="btn-primary" style="display: inline-block; text-decoration: none;">
-      📱 Ouvrir dans le Wallet
-    </a>
-  `;
-  
-  // Générer le QR code via l'API
   try {
-    const qrResponse = await fetch('/api/qrcode', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text: openid4vpLink })
-    });
+    // Récupérer le token
+    const tokenResponse = await fetch(`/presentation-request/${requestUuid}${debugParam}`);
     
-    if (!qrResponse.ok) {
-      throw new Error('Erreur lors de la génération du QR code');
+    let vpToken, payloadDecoded;
+    
+    if (isDebug) {
+      // Mode debug: réponse en JSON
+      const tokenData = await tokenResponse.json();
+      vpToken = tokenData.vp_token;
+      payloadDecoded = tokenData.payload_decoded;
+    } else {
+      // Mode normal: réponse en texte brut
+      vpToken = await tokenResponse.text();
     }
     
-    const qrData = await qrResponse.json();
-    const qrContainer = document.getElementById('qrCodeContainer');
-    qrContainer.innerHTML = `<img src="${qrData.qrCode}" alt="QR Code" style="border: 1px solid #ddd; border-radius: 8px;">`;
+    // Construire le lien OpenID4VP avec le token comme request_uri
+    const encodedToken = encodeURIComponent(vpToken);
+    const dnsName = window.location.hostname;
+    const openid4vpLink = `openid4vp://?client=${dnsName}&request_uri=${encodedToken}`;
+    
+    // Remplir l'URL du token
+    document.getElementById('presentationRequestUrl').value = vpToken;
+    
+    // Créer le bouton avec le lien
+    const linkContainer = document.getElementById('openid4vpLinkContainer');
+    linkContainer.innerHTML = `
+      <a href="${openid4vpLink}" class="btn-primary" style="display: inline-block; text-decoration: none;">
+        📱 Ouvrir dans le Wallet
+      </a>
+    `;
+    
+    // Afficher le payload en clair si debug
+    if (isDebug && payloadDecoded) {
+      const payloadContainer = document.getElementById('qrCodeContainer');
+      payloadContainer.innerHTML = `
+        <h4>Decoded Payload (Debug Mode)</h4>
+        <pre style="background: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; max-height: 300px;">
+${JSON.stringify(payloadDecoded, null, 2)}
+        </pre>
+      `;
+    } else {
+      // Générer le QR code via l'API
+      const qrResponse = await fetch('/api/qrcode', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: openid4vpLink })
+      });
+      
+      if (!qrResponse.ok) {
+        throw new Error('Erreur lors de la génération du QR code');
+      }
+      
+      const qrData = await qrResponse.json();
+      const qrContainer = document.getElementById('qrCodeContainer');
+      qrContainer.innerHTML = `<img src="${qrData.qrCode}" alt="QR Code" style="border: 1px solid #ddd; border-radius: 8px;">`;
+    }
+    
+    // Afficher la section des résultats
+    document.getElementById('verificationResultSection').style.display = 'block';
+    
+    // Scroller vers la section
+    document.getElementById('verificationResultSection').scrollIntoView({ behavior: 'smooth' });
+    
+    showNotification('Demande de vérification générée avec succès', 'success');
   } catch (error) {
-    console.error('Erreur QR code:', error);
-    showNotification('Erreur lors de la génération du QR code', 'error');
+    console.error('Erreur:', error);
+    showNotification('Erreur: ' + error.message, 'error');
   }
-  
-  // Afficher la section des résultats
-  document.getElementById('verificationResultSection').style.display = 'block';
-  
-  // Scroller vers la section
-  document.getElementById('verificationResultSection').scrollIntoView({ behavior: 'smooth' });
-  
-  showNotification('Demande de vérification générée avec succès', 'success');
 }
 
 // Masquer le résultat de la vérification
